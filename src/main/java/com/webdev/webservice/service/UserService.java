@@ -1,5 +1,7 @@
 package com.webdev.webservice.service;
 
-public interface UserService {
+import com.webdev.webservice.dto.UserDTO;
 
+public interface UserService {
+    UserDTO createUser(UserDTO userDTO);
 }
