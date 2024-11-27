@@ -2,6 +2,7 @@ package com.webdev.webservice.service.impl;
 
 import com.webdev.webservice.dto.UserDTO;
 import com.webdev.webservice.entity.User;
+import com.webdev.webservice.exception.UserNotFoundException;
 import com.webdev.webservice.repository.UserRepository;
 import com.webdev.webservice.service.UserService;
 import lombok.AllArgsConstructor;
@@ -26,7 +27,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO findUserById(Long id) {
-        User user = userRepository.findById(id).get();
+        User user = userRepository.findById(id).orElseThrow(
+                () -> new UserNotFoundException("User with id " + id + " not found")
+        );
         return modelMapper.map(user, UserDTO.class);
     }
 
@@ -41,7 +44,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO updateUser(Long id, UserDTO userDTO) {
-        User user = userRepository.findById(id).get();
+        User user = userRepository.findById(id).orElseThrow(
+                () -> new UserNotFoundException("User with id " + id + " not found")
+        );
+
         user.setFirstName(userDTO.getFirstName());
         user.setLastName(userDTO.getLastName());
         user.setEmail(userDTO.getEmail());
@@ -52,7 +58,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(Long id) {
-        User user = userRepository.findById(id).get();
+        User user = userRepository.findById(id).orElseThrow(
+                () -> new UserNotFoundException("User with id " + id + " not found")
+        );
         userRepository.delete(user);
     }
 }
