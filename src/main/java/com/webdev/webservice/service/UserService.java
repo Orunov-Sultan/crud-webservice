@@ -8,4 +8,5 @@ public interface UserService {
     UserDTO createUser(UserDTO userDTO);
     UserDTO findUserById(Long id);
     List<UserDTO> findAllUsers();
+    UserDTO updateUser(Long id, UserDTO userDTO);
 }
