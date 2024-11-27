@@ -2,6 +2,7 @@ package com.webdev.webservice.service.impl;
 
 import com.webdev.webservice.dto.UserDTO;
 import com.webdev.webservice.entity.User;
+import com.webdev.webservice.exception.EmailAlreadyExistsException;
 import com.webdev.webservice.exception.UserNotFoundException;
 import com.webdev.webservice.repository.UserRepository;
 import com.webdev.webservice.service.UserService;
@@ -20,6 +21,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO createUser(UserDTO userDTO) {
+        User checkUser = userRepository.findByEmail(userDTO.getEmail());
+        if (checkUser != null) {
+            throw new EmailAlreadyExistsException("Email already exists");
+        }
         User user = modelMapper.map(userDTO, User.class);
         User createdUser = userRepository.save(user);
         return modelMapper.map(createdUser, UserDTO.class);
@@ -47,6 +52,10 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id).orElseThrow(
                 () -> new UserNotFoundException("User with id " + id + " not found")
         );
+        User checkUser = userRepository.findByEmail(userDTO.getEmail());
+        if (checkUser != null) {
+            throw new EmailAlreadyExistsException("Email already exists");
+        }
 
         user.setFirstName(userDTO.getFirstName());
         user.setLastName(userDTO.getLastName());

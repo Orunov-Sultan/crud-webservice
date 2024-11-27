@@ -31,4 +31,14 @@ public class UserExceptionHandler {
         error.setPath(request.getDescription(false));
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorDetails> EmailAlreadyExists(EmailAlreadyExistsException exception, WebRequest request) {
+        ErrorDetails error = new ErrorDetails();
+        error.setTimestamp(LocalDateTime.now());
+        error.setMessage(exception.getMessage());
+        error.setStatusCode(HttpStatus.BAD_REQUEST.value());
+        error.setPath(request.getDescription(false));
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
 }
