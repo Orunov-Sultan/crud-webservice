@@ -49,4 +49,10 @@ public class UserServiceImpl implements UserService {
 
         return modelMapper.map(updatedUser, UserDTO.class);
     }
+
+    @Override
+    public void deleteUser(Long id) {
+        User user = userRepository.findById(id).get();
+        userRepository.delete(user);
+    }
 }
