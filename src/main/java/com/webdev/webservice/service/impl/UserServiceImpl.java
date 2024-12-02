@@ -1,13 +1,19 @@
 package com.webdev.webservice.service.impl;
 
 import com.webdev.webservice.dto.UserDTO;
+import com.webdev.webservice.dto.UserResponse;
 import com.webdev.webservice.entity.User;
 import com.webdev.webservice.exception.EmailAlreadyExistsException;
 import com.webdev.webservice.exception.UserNotFoundException;
 import com.webdev.webservice.repository.UserRepository;
 import com.webdev.webservice.service.UserService;
 import lombok.AllArgsConstructor;
+import org.hibernate.query.SortDirection;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -39,12 +45,29 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDTO> findAllUsers() {
-        List<User> users = userRepository.findAll();
+    public UserResponse findAllUsers(int pageNo, int pageSize, String sortBy, String sortDir) {
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
 
-        return users.stream()
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+
+        Page<User> users = userRepository.findAll(pageable);
+        List<User> userList = users.getContent();
+
+        List<UserDTO> content = userList.stream()
                 .map(user -> modelMapper.map(user, UserDTO.class))
                 .toList();
+
+        UserResponse userResponse = new UserResponse();
+        userResponse.setContent(content);
+        userResponse.setPageNo(users.getNumber());
+        userResponse.setPageSize(users.getSize());
+        userResponse.setTotalElements(users.getTotalElements());
+        userResponse.setTotalPages(users.getTotalPages());
+        userResponse.setLast(users.isLast());
+
+        return userResponse;
     }
 
     @Override

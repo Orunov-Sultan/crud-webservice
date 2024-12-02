@@ -1,8 +1,10 @@
 package com.webdev.webservice.controller;
 
 import com.webdev.webservice.dto.UserDTO;
+import com.webdev.webservice.dto.UserResponse;
 import com.webdev.webservice.entity.User;
 import com.webdev.webservice.service.UserService;
+import com.webdev.webservice.util.AppConstants;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -61,9 +63,14 @@ public class UserController {
             description = "Http Status 200 OK операция прошла успешно"
     )
     @GetMapping
-    public ResponseEntity<List<UserDTO>> findAllUsers() {
-        List<UserDTO> usersDto = userService.findAllUsers();
-        return ResponseEntity.ok(usersDto);
+    public ResponseEntity<UserResponse> findAllUsers(
+            @RequestParam(value = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
+            @RequestParam(value = "pageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
+            @RequestParam(value = "sortBy", defaultValue = AppConstants.DEFAULT_SORT_BY, required = false) String sortBy,
+            @RequestParam(value = "sortDir", defaultValue = AppConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir
+    ) {
+        UserResponse users = userService.findAllUsers(pageNo, pageSize, sortBy, sortDir);
+        return ResponseEntity.ok(users);
     }
 
     @Operation(
